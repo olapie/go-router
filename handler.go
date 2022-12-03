@@ -40,6 +40,8 @@ type contextKey int
 
 const keyNextHandler contextKey = iota
 
+// Next calls the next handler and returns the result
+// It panics if next handler doesn't exist
 func Next[IN any, OUT any](ctx context.Context, in IN) (out OUT) {
 	h, ok := ctx.Value(keyNextHandler).(*HandlerWrapper[Handler[IN, OUT]])
 	if !ok {
@@ -55,6 +57,8 @@ func Next[IN any, OUT any](ctx context.Context, in IN) (out OUT) {
 	return h.Handler().Handle(ctx, in)
 }
 
+// NextWithError calls the next handler and returns the result
+// It panics if next handler doesn't exist
 func NextWithError[IN any, OUT any](ctx context.Context, in IN) (out OUT, err error) {
 	h, ok := ctx.Value(keyNextHandler).(*HandlerWrapper[HandlerWithError[IN, OUT]])
 	if !ok {
@@ -70,6 +74,8 @@ func NextWithError[IN any, OUT any](ctx context.Context, in IN) (out OUT, err er
 	return h.Handler().Handle(ctx, in)
 }
 
+// WithNextHandler puts the wrapper of next handler into the context
+// next must be returned from router
 func WithNextHandler[H any](ctx context.Context, next *HandlerWrapper[H]) context.Context {
 	return context.WithValue(ctx, keyNextHandler, next)
 }
