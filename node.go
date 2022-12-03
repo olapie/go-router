@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"code.olapie.com/conv"
-	"code.olapie.com/log"
 	"code.olapie.com/types"
 )
 
@@ -43,9 +42,7 @@ func getNodeType(segment string) nodeType {
 	case IsWildcard(segment):
 		return wildcardNode
 	default:
-		log.S().Panicf("Invalid segment: %s", segment)
-		// Suppress compiling error because compiler doesn't know log.Panicf equals to built-in panic function
-		return wildcardNode
+		panic(fmt.Sprintf("Invalid segment: %s", segment))
 	}
 }
 
@@ -90,7 +87,7 @@ func newNodeList[H any](path string, handlers []H) *node[H] {
 
 func newNode[H any](path, segment string) *node[H] {
 	if len(strings.Split(segment, "/")) > 1 {
-		log.S().Panicf("Invalid segment: ", segment)
+		panic(fmt.Sprintf("Invalid segment: %s", segment))
 	}
 	n := &node[H]{
 		typ:     getNodeType(segment),
@@ -144,7 +141,7 @@ func (n *node[H]) Handler() *HandlerWrapper[H] {
 
 func (n *node[H]) SetHandlers(handlers []H) {
 	if n.handlers != nil && n.handlers.Len() > 0 {
-		log.S().Panicf("Cannot overwrite handlers")
+		panic("Cannot overwrite handlers")
 	}
 	n.handlers = list.New()
 	for _, h := range handlers {
@@ -222,7 +219,7 @@ func (n *node[H]) Add(nod *node[H]) {
 	var match *node[H]
 	for _, child := range n.children {
 		if v := child.Conflict(nod); v != nil {
-			log.S().Panicf("Conflict: %s, %s", v.First.path, v.Second.path)
+			panic(fmt.Sprintf("Conflict: %s, %s", v.First.path, v.Second.path))
 		}
 
 		if child.segment == nod.segment {
@@ -269,7 +266,7 @@ func (n *node[H]) Add(nod *node[H]) {
 	case wildcardNode:
 		n.children = append(n.children, nod)
 	default:
-		log.S().Panicf("Invalid node type: %v", nod.typ)
+		panic(fmt.Sprintf("Invalid node type: %v", nod.typ))
 	}
 }
 

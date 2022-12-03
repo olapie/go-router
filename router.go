@@ -19,7 +19,7 @@ type Router[H any] struct {
 	nodes    []*node[H]
 }
 
-// New new a Router
+// New a Router
 func New[H any]() *Router[H] {
 	r := &Router[H]{
 		rootNodes: make(map[string]*node[H], 4),
@@ -53,7 +53,7 @@ func (r *Router[H]) InsertGlobalPreHandlers(handlers ...H) {
 
 	for _, h := range handlers {
 		if r.ContainsHandler(h) {
-			log.S().Panicf("Duplicate handler: %v", h)
+			panic(fmt.Sprintf("Duplicate handler: %v", h))
 		}
 	}
 	r.handlers = append(handlers, r.handlers...)
@@ -163,11 +163,11 @@ func (r *Router[H]) Bind(scope, path string, handlers ...H) *Endpoint[H] {
 	path = Normalize(r.basePath + "/" + path)
 	if path == "" {
 		if root.IsEndpoint() {
-			log.S().Panicf("Conflict: %s, %s", scope, r.basePath)
+			panic(fmt.Sprintf("Conflict: %s, %s", scope, r.basePath))
 		}
 
 		if global.IsEndpoint() {
-			log.S().Panicf("Conflict: %s", r.basePath)
+			panic(fmt.Sprintf("Conflict: %s", r.basePath))
 		}
 		root.SetHandlers(hl)
 	} else {
@@ -175,7 +175,7 @@ func (r *Router[H]) Bind(scope, path string, handlers ...H) *Endpoint[H] {
 		if pair := global.Conflict(nl); pair != nil {
 			first := pair.First.Path()
 			second := pair.Second.Path()
-			log.S().Panicf("Conflict: %s, %s %s", first, scope, second)
+			panic(fmt.Sprintf("Conflict: %s, %s %s", first, scope, second))
 		}
 		root.Add(nl)
 		r.nodes = append(r.nodes, nl)
