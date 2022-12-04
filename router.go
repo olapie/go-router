@@ -43,7 +43,7 @@ func (r *Router[H]) BasePath() string {
 	return r.basePath
 }
 
-// SetGlobalHandlers inserts pre handlers for all nodes in this router and its child routers
+// InsertGlobalPreHandlers inserts pre handlers for all nodes in this router and its child routers
 func (r *Router[H]) InsertGlobalPreHandlers(handlers ...H) {
 	for _, node := range r.nodes {
 		if node.IsEndpoint() {
