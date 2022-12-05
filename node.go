@@ -343,7 +343,7 @@ func (n *node[H]) Match(segments ...string) (*node[H], map[string]string) {
 }
 
 func (n *node[H]) HandlerPath() string {
-	reg := regexp.MustCompile(`\(\*([a-zA-Z0-9_]+)\)`)
+	reg := regexp.MustCompile(`\(\*(\w+)\)`)
 	s := new(strings.Builder)
 	for e := n.handlers.Front(); e != nil; e = e.Next() {
 		if s.Len() > 0 {
