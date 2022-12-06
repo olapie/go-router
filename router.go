@@ -5,8 +5,6 @@ import (
 	"net/url"
 	"sort"
 	"strings"
-
-	"code.olapie.com/log"
 )
 
 // Router implements routing function
@@ -62,7 +60,7 @@ func (r *Router[H]) InsertGlobalPreHandlers(handlers ...H) {
 // Group returns a new Router[H] whose basePath is r.basePath+path
 func (r *Router[H]) Group(path string) *Router[H] {
 	if path == "/" {
-		log.S().Panic(`Not allowed to create group "/"`)
+		panic(`not allowed to create group "/"`)
 	}
 
 	nr := r.clone()
@@ -120,7 +118,7 @@ func (r *Router[H]) Match(scope string, path string) (*Endpoint[H], map[string]s
 	for k, v := range params {
 		uv, err := url.PathUnescape(v)
 		if err != nil {
-			log.G().Error("unescape path param", log.String("param", v), log.Error(err))
+			fmt.Printf("unescape path param: %v, %v\n", v, err)
 			unescaped[k] = v
 		} else {
 			unescaped[k] = uv
@@ -145,11 +143,11 @@ func (r *Router[H]) MatchScopes(path string) []string {
 // Bind binds scope, path with handlers
 func (r *Router[H]) Bind(scope, path string, handlers ...H) *Endpoint[H] {
 	if path == "" {
-		log.G().Panic("path is empty")
+		panic("path is empty")
 	}
 
 	if len(handlers) == 0 {
-		log.G().Panic("handlers cannot be empty")
+		panic("handlers cannot be empty")
 	}
 
 	scope = strings.ToUpper(scope)
@@ -202,7 +200,7 @@ func (r *Router[H]) Print() {
 	for method, root := range r.rootNodes {
 		nodes := root.ListEndpoints()
 		for _, n := range nodes {
-			log.S().Debugf("%-5s %s\t%s", method, n.Path(), n.HandlerPath())
+			fmt.Printf("%-5s %s\t%s\n", method, n.Path(), n.HandlerPath())
 		}
 	}
 }

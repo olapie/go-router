@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	"code.olapie.com/conv"
-	"code.olapie.com/types"
+	"code.olapie.com/sugar/conv"
+	"code.olapie.com/sugar/types"
 )
 
 type nodeType int

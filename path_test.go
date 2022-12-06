@@ -3,21 +3,22 @@ package router_test
 import (
 	"testing"
 
+	"code.olapie.com/sugar/testx"
+
 	"code.olapie.com/router"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestNormalize(t *testing.T) {
-	assert.Equal(t, "hello", router.Normalize("hello//"))
-	assert.Equal(t, "hello/{id}", router.Normalize("hello/{id}/"))
-	assert.Equal(t, "hello/{id}", router.Normalize("//hello/{id}/"))
-	assert.Empty(t, router.Normalize("//"))
+	testx.Equal(t, "hello", router.Normalize("hello//"))
+	testx.Equal(t, "hello/{id}", router.Normalize("hello/{id}/"))
+	testx.Equal(t, "hello/{id}", router.Normalize("//hello/{id}/"))
+	testx.True(t, router.Normalize("//") == "")
 }
 
 func TestIsStaticPath(t *testing.T) {
-	assert.Empty(t, router.IsStatic("{a}"))
-	assert.NotEmpty(t, router.IsStatic("ab"))
-	assert.Empty(t, router.IsParam("/a"))
+	testx.False(t, router.IsStatic("{a}"))
+	testx.True(t, router.IsStatic("ab"))
+	testx.False(t, router.IsParam("/a"))
 }
 
 func TestIsParamPath(t *testing.T) {
@@ -30,7 +31,7 @@ func TestIsParamPath(t *testing.T) {
 			"{a1_}",
 		}
 		for _, v := range trueCases {
-			assert.NotEmpty(t, router.IsParam(v))
+			testx.True(t, router.IsParam(v))
 		}
 	})
 	t.Run("false", func(t *testing.T) {
@@ -44,7 +45,7 @@ func TestIsParamPath(t *testing.T) {
 			"{1_a}",
 		}
 		for _, v := range falseCases {
-			assert.Empty(t, router.IsParam(v))
+			testx.False(t, router.IsParam(v))
 		}
 	})
 }
