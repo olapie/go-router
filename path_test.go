@@ -1,24 +1,23 @@
 package router_test
 
 import (
+	"code.olapie.com/sugar/v2/xtest"
 	"testing"
-
-	"code.olapie.com/sugar/testx"
 
 	"code.olapie.com/router"
 )
 
 func TestNormalize(t *testing.T) {
-	testx.Equal(t, "hello", router.Normalize("hello//"))
-	testx.Equal(t, "hello/{id}", router.Normalize("hello/{id}/"))
-	testx.Equal(t, "hello/{id}", router.Normalize("//hello/{id}/"))
-	testx.True(t, router.Normalize("//") == "")
+	xtest.Equal(t, "hello", router.Normalize("hello//"))
+	xtest.Equal(t, "hello/{id}", router.Normalize("hello/{id}/"))
+	xtest.Equal(t, "hello/{id}", router.Normalize("//hello/{id}/"))
+	xtest.True(t, router.Normalize("//") == "")
 }
 
 func TestIsStaticPath(t *testing.T) {
-	testx.False(t, router.IsStatic("{a}"))
-	testx.True(t, router.IsStatic("ab"))
-	testx.False(t, router.IsParam("/a"))
+	xtest.False(t, router.IsStatic("{a}"))
+	xtest.True(t, router.IsStatic("ab"))
+	xtest.False(t, router.IsParam("/a"))
 }
 
 func TestIsParamPath(t *testing.T) {
@@ -31,7 +30,7 @@ func TestIsParamPath(t *testing.T) {
 			"{a1_}",
 		}
 		for _, v := range trueCases {
-			testx.True(t, router.IsParam(v))
+			xtest.True(t, router.IsParam(v))
 		}
 	})
 	t.Run("false", func(t *testing.T) {
@@ -45,7 +44,7 @@ func TestIsParamPath(t *testing.T) {
 			"{1_a}",
 		}
 		for _, v := range falseCases {
-			testx.False(t, router.IsParam(v))
+			xtest.False(t, router.IsParam(v))
 		}
 	})
 }

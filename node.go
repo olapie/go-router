@@ -1,6 +1,7 @@
 package router
 
 import (
+	"code.olapie.com/sugar/v2/xtype"
 	"container/list"
 	"fmt"
 	"os"
@@ -8,8 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"code.olapie.com/sugar/conv"
-	"code.olapie.com/sugar/types"
+	"code.olapie.com/sugar/v2/conv"
 )
 
 type nodeType int
@@ -174,7 +174,7 @@ func (n *node[H]) InsertPreHandlers(handlers []H) {
 	n.handlers.PushFrontList(hl)
 }
 
-func (n *node[H]) Conflict(nod *node[H]) *types.Pair[*node[H]] {
+func (n *node[H]) Conflict(nod *node[H]) *xtype.Pair[*node[H]] {
 	if n.typ != nod.typ {
 		return nil
 	}
@@ -186,20 +186,20 @@ func (n *node[H]) Conflict(nod *node[H]) *types.Pair[*node[H]] {
 		}
 
 		if n.IsEndpoint() && nod.IsEndpoint() {
-			return &types.Pair[*node[H]]{
+			return &xtype.Pair[*node[H]]{
 				First:  n,
 				Second: nod,
 			}
 		}
 	case paramNode:
 		if n.IsEndpoint() && nod.IsEndpoint() {
-			return &types.Pair[*node[H]]{
+			return &xtype.Pair[*node[H]]{
 				First:  n,
 				Second: nod,
 			}
 		}
 	case wildcardNode:
-		return &types.Pair[*node[H]]{
+		return &xtype.Pair[*node[H]]{
 			First:  n,
 			Second: nod,
 		}
