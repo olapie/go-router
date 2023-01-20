@@ -161,19 +161,21 @@ func (r *Router[H]) Bind(scope, path string, handlers ...H) *Endpoint[H] {
 	path = Normalize(r.basePath + "/" + path)
 	if path == "" {
 		if root.IsEndpoint() {
-			panic(fmt.Sprintf("Conflict: %s, %s", scope, r.basePath))
+			panic(fmt.Sprintf("conflict: %s, %s", scope, r.basePath))
 		}
 
 		if global.IsEndpoint() {
-			panic(fmt.Sprintf("Conflict: %s", r.basePath))
+			panic(fmt.Sprintf("conflict: %s", r.basePath))
 		}
 		root.SetHandlers(hl)
 	} else {
 		nl := newNodeList(path, hl)
-		if pair := global.Conflict(nl); pair != nil {
-			first := pair.First.Path()
-			second := pair.Second.Path()
-			panic(fmt.Sprintf("Conflict: %s, %s %s", first, scope, second))
+		if conflicts := global.Conflict(nl); len(conflicts) != 0 {
+			paths := make([]string, len(conflicts))
+			for i, conflict := range conflicts {
+				paths[i] = conflict.path
+			}
+			panic(fmt.Sprintf("conflict paths: %v", paths))
 		}
 		root.Add(nl)
 		r.nodes = append(r.nodes, nl)

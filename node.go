@@ -1,15 +1,12 @@
 package router
 
 import (
-	"code.olapie.com/sugar/v2/xtype"
 	"container/list"
 	"fmt"
 	"os"
 	"reflect"
 	"regexp"
 	"strings"
-
-	"code.olapie.com/sugar/v2/conv"
 )
 
 type nodeType int
@@ -170,11 +167,11 @@ func (n *node[H]) InsertPreHandlers(handlers []H) {
 		return
 	}
 
-	hl := conv.ToList(handlers)
+	hl := sliceToList(handlers)
 	n.handlers.PushFrontList(hl)
 }
 
-func (n *node[H]) Conflict(nod *node[H]) *xtype.Pair[*node[H]] {
+func (n *node[H]) Conflict(nod *node[H]) []*node[H] {
 	if n.typ != nod.typ {
 		return nil
 	}
@@ -186,23 +183,14 @@ func (n *node[H]) Conflict(nod *node[H]) *xtype.Pair[*node[H]] {
 		}
 
 		if n.IsEndpoint() && nod.IsEndpoint() {
-			return &xtype.Pair[*node[H]]{
-				First:  n,
-				Second: nod,
-			}
+			return []*node[H]{n, nod}
 		}
 	case paramNode:
 		if n.IsEndpoint() && nod.IsEndpoint() {
-			return &xtype.Pair[*node[H]]{
-				First:  n,
-				Second: nod,
-			}
+			return []*node[H]{n, nod}
 		}
 	case wildcardNode:
-		return &xtype.Pair[*node[H]]{
-			First:  n,
-			Second: nod,
-		}
+		return []*node[H]{n, nod}
 	}
 
 	for _, a := range n.children {
@@ -218,8 +206,12 @@ func (n *node[H]) Conflict(nod *node[H]) *xtype.Pair[*node[H]] {
 func (n *node[H]) Add(nod *node[H]) {
 	var match *node[H]
 	for _, child := range n.children {
-		if v := child.Conflict(nod); v != nil {
-			panic(fmt.Sprintf("Conflict: %s, %s", v.First.path, v.Second.path))
+		if conflicts := child.Conflict(nod); len(conflicts) != 0 {
+			paths := make([]string, len(conflicts))
+			for i, conflict := range conflicts {
+				paths[i] = conflict.path
+			}
+			panic(fmt.Sprintf("conflict paths: %v", paths))
 		}
 
 		if child.segment == nod.segment {
@@ -400,4 +392,12 @@ func shortPath(path string) string {
 		}
 	}
 	return strings.Join(names, "/")
+}
+
+func sliceToList[E any](a []E) *list.List {
+	l := list.New()
+	for _, v := range a {
+		l.PushBack(v)
+	}
+	return l
 }

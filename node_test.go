@@ -1,8 +1,9 @@
 package router
 
 import (
-	"code.olapie.com/sugar/v2/xtest"
 	"testing"
+
+	"code.olapie.com/sugar/v2/xtest"
 )
 
 func TestNewNode(t *testing.T) {
@@ -20,15 +21,27 @@ func TestNode_Conflict(t *testing.T) {
 	hl := []func(){func() {}}
 	root := newNodeList("/hello/world/{param}", hl)
 
-	pair := root.Conflict(newNodeList("/hello/world/{param}", hl))
-	xtest.True(t, pair != nil)
+	good := []string{
+		"/hello/{world}",
+		"/hello/{world}/{param}",
+		"/hello/world/*",
+	}
 
-	pair = root.Conflict(newNodeList("/hello/{world}", hl))
-	xtest.True(t, pair == nil)
+	bad := []string{
+		"/hello/world/{param}",
+	}
 
-	pair = root.Conflict(newNodeList("/hello/{world}/{param}", hl))
-	xtest.True(t, pair == nil)
+	for _, test := range good {
+		conflicts := root.Conflict(newNodeList(test, hl))
+		if len(conflicts) != 0 {
+			t.Fatalf("expected no conflit: %s", test)
+		}
+	}
 
-	pair = root.Conflict(newNodeList("/hello/world/*", hl))
-	xtest.True(t, pair == nil)
+	for _, test := range bad {
+		conflicts := root.Conflict(newNodeList(test, hl))
+		if len(conflicts) == 0 {
+			t.Fatalf("expected conflit: %s", test)
+		}
+	}
 }

@@ -6,7 +6,7 @@ import (
 
 var (
 	compactSlashRegexp = regexp.MustCompile(`/{2,}`)
-	staticPathRegexp   = regexp.MustCompile(`^[^\\{\\}\\*]+$`)
+	staticPathRegexp   = regexp.MustCompile(`^[^\\/{}*]+$`)
 	wildcardPathRegexp = regexp.MustCompile(`^*[\da-zA-Z_\\-]*$`)
 	paramPathRegexp    = regexp.MustCompile(`^{([a-zA-Z]\w*|_\w*[a-zA-Z\d]+\w*)}$`)
 )
