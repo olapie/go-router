@@ -2,19 +2,25 @@ package router
 
 import (
 	"testing"
-
-	"code.olapie.com/sugar/v2/xtest"
 )
 
 func TestNewNode(t *testing.T) {
 	n := newNode[struct{}]("*", "*")
-	xtest.Equal(t, wildcardNode, n.typ)
+	if n.typ != wildcardNode {
+		t.Fatalf("node * type should be %s instead of %s", wildcardNode, n.typ)
+	}
 	n = newNode[struct{}]("*file", "*file")
-	xtest.Equal(t, wildcardNode, n.typ)
+	if n.typ != wildcardNode {
+		t.Fatalf("node *file type should be %s instead of %s", wildcardNode, n.typ)
+	}
 
 	n = newNode[struct{}]("{a}", "{a}")
-	xtest.Equal(t, paramNode, n.typ)
-	xtest.Equal(t, "a", n.paramName)
+	if n.typ != paramNode {
+		t.Fatalf("node type should be %s instead of %s", paramNode, n.typ)
+	}
+	if n.paramName != "a" {
+		t.Fatalf("node param name should be \"a\" instead of %s", n.paramName)
+	}
 }
 
 func TestNode_Conflict(t *testing.T) {
