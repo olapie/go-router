@@ -150,16 +150,15 @@ func (n *node[H]) InsertPreHandlers(handlers []H) {
 	for i := len(handlers) - 1; i >= 0; i-- {
 		h := handlers[i]
 		hStr := fmt.Sprint(h)
-		found := false
-		for e := n.handlers.Front(); e != nil; e = e.Next() {
-			if any(h) == e.Value || hStr == fmt.Sprint(e.Value) {
-				found = true
-				break
-			}
+		if !reflect.TypeOf(h).Comparable() {
+			continue
 		}
 
-		if found {
-			handlers = append(handlers[:i], handlers[i+1:]...)
+		for e := n.handlers.Front(); e != nil && reflect.TypeOf(e.Value).Comparable(); e = e.Next() {
+			if any(h) == e.Value || hStr == fmt.Sprint(e.Value) {
+				handlers = append(handlers[:i], handlers[i+1:]...)
+				break
+			}
 		}
 	}
 
