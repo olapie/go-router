@@ -1,9 +1,7 @@
-package router_test
+package router
 
 import (
 	"testing"
-
-	"code.olapie.com/router"
 )
 
 func TestNormalize(t *testing.T) {
@@ -15,7 +13,7 @@ func TestNormalize(t *testing.T) {
 	}
 
 	for path, expected := range tests {
-		if got := router.Normalize(path); got != expected {
+		if got := Normalize(path); got != expected {
 			t.Fatalf("expected: %s, but got: %s", expected, got)
 		}
 	}
@@ -25,13 +23,13 @@ func TestIsStaticPath(t *testing.T) {
 	good := []string{"ab", "a", "1"}
 	bad := []string{"{a}", "{", "}", "/", "/a"}
 	for _, v := range good {
-		if !router.IsStatic(v) {
+		if !IsStatic(v) {
 			t.Fatal(v)
 		}
 	}
 
 	for _, v := range bad {
-		if router.IsStatic(v) {
+		if IsStatic(v) {
 			t.Fatal(v)
 		}
 	}
@@ -47,7 +45,7 @@ func TestIsParamPath(t *testing.T) {
 			"{a1_}",
 		}
 		for _, v := range trueCases {
-			if !router.IsParam(v) {
+			if !IsParam(v) {
 				t.Fatalf("expected param: %s", v)
 			}
 		}
@@ -63,7 +61,7 @@ func TestIsParamPath(t *testing.T) {
 			"{1_a}",
 		}
 		for _, v := range falseCases {
-			if router.IsParam(v) {
+			if IsParam(v) {
 				t.Fatalf("expected not param: %s", v)
 			}
 		}
